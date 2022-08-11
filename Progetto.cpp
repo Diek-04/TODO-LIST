@@ -9,7 +9,156 @@
 
 #include <cctype>
 #include "Progetto.h"
+static void writeHTMLheader(FILE* file, char progetto[]);
+static void writeHTMLfooter(FILE* file);
 
+bool creaCSV(FILETYPE tipo_file, char nome_file[], int typeOfCall, Attivita attivita[], unsigned int numero_attivita) {
+	FILE* file;
+	char descrizione[256];
+	char nome_file_completo[1024];
+
+	strncpy(nome_file_completo, nome_file, sizeof(nome_file_completo) - 1);
+	strcat(nome_file_completo, ".csv");
+	file = fopen(nome_file_completo, "wt");
+	if (file == NULL)
+		return false;
+
+	switch (typeOfCall) {
+	case 0:
+		for (unsigned int _indice = 0; _indice < numero_attivita; _indice++) {
+			attivita[_indice].getDescrizione(descrizione);
+			// descrizione, svolgimento, giorno, mese, anno
+			if (attivita[_indice].getSvolgimento() == 100)
+				fprintf(file, "%s,%u,%u,%u,%u\n", descrizione, 100, attivita[_indice].getCompletamento().getDay(),
+					attivita[_indice].getCompletamento().getMonth(),
+					attivita[_indice].getCompletamento().getYear());
+			else
+				fprintf(file, "%s,%u,%u,%u,%u\n", descrizione, attivita[_indice].getSvolgimento(),
+					attivita[_indice].getScadenza().getDay(), attivita[_indice].getScadenza().getMonth(),
+					attivita[_indice].getScadenza().getYear());
+		}
+		fclose(file);
+		return true;
+	case 1:
+		for (unsigned int _indice = 0; _indice < numero_attivita; _indice++) {
+			attivita[_indice].getDescrizione(descrizione);
+			// descrizione, svolgimento, giorno, mese, anno
+			if (attivita[_indice].getSvolgimento() == 100)
+				fprintf(file, "%s,%u,%u,%u,%u\n", descrizione, 100, attivita[_indice].getCompletamento().getDay(),
+					attivita[_indice].getCompletamento().getMonth(),
+					attivita[_indice].getCompletamento().getYear());
+		}
+		fclose(file);
+		return true;
+
+	}
+
+}
+bool creaCSV(Date data, FILETYPE tipo_file, char nome_file[], int typeOfCall, Attivita attivita[], unsigned int numero_attivita) {
+	FILE* file;
+	char descrizione[256];
+	char nome_file_completo[1024];
+
+	strncpy(nome_file_completo, nome_file, sizeof(nome_file_completo) - 1);
+	strcat(nome_file_completo, ".csv");
+	file = fopen(nome_file_completo, "wt");
+	if (file == NULL)
+		return false;
+
+	switch (typeOfCall) {
+	case 2:
+		for (unsigned int _indice = 0; _indice < numero_attivita; _indice++) {
+			attivita[_indice].getDescrizione(descrizione);
+			// descrizione, svolgimento, giorno, mese, anno
+			if (attivita[_indice].getSvolgimento() < 100 && data.diff(attivita[_indice].getScadenza()) < 0)
+				fprintf(file, "%s,%u,%u,%u,%u\n", descrizione, attivita[_indice].getSvolgimento(),
+					attivita[_indice].getScadenza().getDay(), attivita[_indice].getScadenza().getMonth(),
+					attivita[_indice].getScadenza().getYear());
+		}
+		fclose(file);
+		return true;
+	}
+
+}
+
+bool creaHTML(FILETYPE tipo_file, char nome_file[], int typeOfCall, Attivita attivita[], unsigned int numero_attivita, char denominazione[]) {
+	FILE* file;
+	char descrizione[256];
+	char nome_file_completo[1024];
+	strncpy(nome_file_completo, nome_file, sizeof(nome_file_completo) - 1);
+	strcat(nome_file_completo, ".html");
+	file = fopen(nome_file_completo, "wt");
+	if (file == NULL)
+		return false;
+	writeHTMLheader(file, denominazione);
+
+	switch (typeOfCall) {
+	case 0:
+		for (unsigned int _indice = 0; _indice < numero_attivita; _indice++) {
+			attivita[_indice].getDescrizione(descrizione);
+			fprintf(file, "<tr>\r\n");
+			if (attivita[_indice].getSvolgimento() == 100)
+				fprintf(file, "<td>%s</td><td>%u%%</td><td>%u-%u-%u</td>\n", descrizione, 100,
+					attivita[_indice].getCompletamento().getDay(),
+					attivita[_indice].getCompletamento().getMonth(),
+					attivita[_indice].getCompletamento().getYear());
+			else
+				fprintf(file, "<td>%s</td><td>%u%%</td><td>%u-%u-%u</td>\n", descrizione,
+					attivita[_indice].getSvolgimento(), attivita[_indice].getScadenza().getDay(),
+					attivita[_indice].getScadenza().getMonth(), attivita[_indice].getScadenza().getYear());
+			fprintf(file, "</tr>\r\n");
+		}
+		writeHTMLfooter(file);
+		fclose(file);
+		return true;
+	case 1:
+		for (unsigned int _indice = 0; _indice < numero_attivita; _indice++) {
+			attivita[_indice].getDescrizione(descrizione);
+			if (attivita[_indice].getSvolgimento() == 100) {
+				fprintf(file, "<tr>\n");
+				fprintf(file, "<td>%s</td><td>%u%%</td><td>%u-%u-%u</td>\n", descrizione, 100,
+					attivita[_indice].getCompletamento().getDay(),
+					attivita[_indice].getCompletamento().getMonth(),
+					attivita[_indice].getCompletamento().getYear());
+				fprintf(file, "</tr>\n");
+			}
+		}
+		writeHTMLfooter(file);
+		fclose(file);
+		return true;
+	}
+
+}
+
+bool creaHTML(Date data, FILETYPE tipo_file, char nome_file[], int typeOfCall, Attivita attivita[], unsigned int numero_attivita, char denominazione[]) {
+	FILE* file;
+	char descrizione[256];
+	char nome_file_completo[1024];
+	strncpy(nome_file_completo, nome_file, sizeof(nome_file_completo) - 1);
+	strcat(nome_file_completo, ".html");
+	file = fopen(nome_file_completo, "wt");
+	if (file == NULL)
+		return false;
+	writeHTMLheader(file, denominazione);
+
+	switch (typeOfCall) {
+	case 2:
+
+		for (unsigned int _indice = 0; _indice < numero_attivita; _indice++) {
+			attivita[_indice].getDescrizione(descrizione);
+			if (attivita[_indice].getSvolgimento() < 100 && data.diff(attivita[_indice].getScadenza()) < 0) {
+				fprintf(file, "<tr>\r\n");
+				fprintf(file, "<td>%s</td><td>%u%%</td><td>%u-%u-%u</td>\n", descrizione,
+					attivita[_indice].getSvolgimento(), attivita[_indice].getScadenza().getDay(),
+					attivita[_indice].getScadenza().getMonth(), attivita[_indice].getScadenza().getYear());
+				fprintf(file, "</tr>\r\n");
+			}
+		}
+		writeHTMLfooter(file);
+		fclose(file);
+		return true;
+	}
+}
 
 static bool confrontaStringhe(const char s1[], const char s2[])
 {
@@ -284,42 +433,9 @@ bool Progetto::esportaAttivitaSuFile(FILETYPE tipo_file, char nome_file[])
 	switch (tipo_file)
 	      {
 			case CSV:
-	  					strncpy(nome_file_completo, nome_file, sizeof(nome_file_completo)-1);
-						strcat(nome_file_completo, ".csv");
-						file = fopen(nome_file_completo, "wt");
-						if (file == NULL)
-						  return false;
-						for (unsigned int _indice = 0; _indice < numero_attivita; _indice++)
-						   {
-							attivita[_indice].getDescrizione(descrizione);
-							// descrizione, svolgimento, giorno, mese, anno
-							if (attivita[_indice].getSvolgimento() == 100)
-							  fprintf(file, "%s,%u,%u,%u,%u\n", descrizione, 100, attivita[_indice].getCompletamento().getDay(), attivita[_indice].getCompletamento().getMonth(), attivita[_indice].getCompletamento().getYear());
-							else
-								fprintf(file, "%s,%u,%u,%u,%u\n", descrizione, attivita[_indice].getSvolgimento(), attivita[_indice].getScadenza().getDay(), attivita[_indice].getScadenza().getMonth(), attivita[_indice].getScadenza().getYear());
-						   }
-						fclose(file);
-						return true;
-			case HTML:	
-						strncpy(nome_file_completo, nome_file, sizeof(nome_file_completo) - 1);
-						strcat(nome_file_completo, ".html");
-						file = fopen(nome_file_completo, "wt");
-						if (file == NULL)
-						  return false;
-						writeHTMLheader(file, this->denominazione);
-						for (unsigned int _indice = 0; _indice < numero_attivita; _indice++)
-						   {
-							attivita[_indice].getDescrizione(descrizione);
-							fprintf(file, "<tr>\r\n");
-							if (attivita[_indice].getSvolgimento() == 100)
-								fprintf(file, "<td>%s</td><td>%u%%</td><td>%u-%u-%u</td>\n", descrizione, 100, attivita[_indice].getCompletamento().getDay(), attivita[_indice].getCompletamento().getMonth(), attivita[_indice].getCompletamento().getYear());
-							else
-								fprintf(file, "<td>%s</td><td>%u%%</td><td>%u-%u-%u</td>\n", descrizione, attivita[_indice].getSvolgimento(), attivita[_indice].getScadenza().getDay(), attivita[_indice].getScadenza().getMonth(), attivita[_indice].getScadenza().getYear());
-							fprintf(file, "</tr>\r\n");
-						}
-						writeHTMLfooter(file);
-						fclose(file);
-						return true;
+				return creaCSV(tipo_file, nome_file, 0, attivita, numero_attivita);
+			case HTML:
+				return creaHTML(tipo_file, nome_file, 0, attivita, numero_attivita, this->denominazione);
 			default:	return false;
 		  }
 }
@@ -333,40 +449,10 @@ bool Progetto::esportaAttivitaCompletateSuFile(FILETYPE tipo_file, char nome_fil
 	switch (tipo_file)
 		  {
 		   case CSV:
-						strncpy(nome_file_completo, nome_file, sizeof(nome_file_completo) - 1);
-						strcat(nome_file_completo, ".csv");
-						file = fopen(nome_file_completo, "wt");
-						if (file == NULL)
-						  return false;
-						for (unsigned int _indice = 0; _indice < numero_attivita; _indice++)
-						   {
-							attivita[_indice].getDescrizione(descrizione);
-							// descrizione, svolgimento, giorno, mese, anno
-							if (attivita[_indice].getSvolgimento() == 100)
-							  fprintf(file, "%s,%u,%u,%u,%u\n", descrizione, 100, attivita[_indice].getCompletamento().getDay(), attivita[_indice].getCompletamento().getMonth(), attivita[_indice].getCompletamento().getYear());
-						   }
-						fclose(file);
-						return true;
+			   return creaCSV(tipo_file, nome_file, 1, attivita, numero_attivita);
+
 		   case HTML:
-						strncpy(nome_file_completo, nome_file, sizeof(nome_file_completo) - 1);
-						strcat(nome_file_completo, ".html");
-						file = fopen(nome_file_completo, "wt");
-						if (file == NULL)
-						  return false;
-						writeHTMLheader(file, this->denominazione);
-						for (unsigned int _indice = 0; _indice < numero_attivita; _indice++)
-						   {
-							attivita[_indice].getDescrizione(descrizione);
-							if (attivita[_indice].getSvolgimento() == 100)
-							  {
-								fprintf(file, "<tr>\n");
-				   				fprintf(file, "<td>%s</td><td>%u%%</td><td>%u-%u-%u</td>\n", descrizione, 100, attivita[_indice].getCompletamento().getDay(), attivita[_indice].getCompletamento().getMonth(), attivita[_indice].getCompletamento().getYear());
-				   				fprintf(file, "</tr>\n");
-							  }
-			               }
-						writeHTMLfooter(file);
-						fclose(file);
-						return true;
+			   return creaHTML(tipo_file, nome_file, 1, attivita, numero_attivita, this->denominazione);
 			default:	return false;
 		   }
 }
@@ -380,40 +466,9 @@ bool Progetto::esportaAttivitaInScadenzaSuFile(Date data, FILETYPE tipo_file, ch
 	switch (tipo_file)
 	      {
 		   case CSV:
-						strncpy(nome_file_completo, nome_file, sizeof(nome_file_completo) - 1);
-						strcat(nome_file_completo, ".csv");
-						file = fopen(nome_file_completo, "wt");
-						if (file == NULL)
-						  return false;
-						for (unsigned int _indice = 0; _indice < numero_attivita; _indice++)
-						   {
-							attivita[_indice].getDescrizione(descrizione);
-							// descrizione, svolgimento, giorno, mese, anno
-							if (attivita[_indice].getSvolgimento() < 100 && data.diff(attivita[_indice].getScadenza()) < 0)
-							  fprintf(file, "%s,%u,%u,%u,%u\n", descrizione, attivita[_indice].getSvolgimento(), attivita[_indice].getScadenza().getDay(), attivita[_indice].getScadenza().getMonth(), attivita[_indice].getScadenza().getYear());
-						   }
-						fclose(file);
-						return true;
+			   return creaCSV(data, tipo_file, nome_file, 2, attivita, numero_attivita);
 		   case HTML:
-						strncpy(nome_file_completo, nome_file, sizeof(nome_file_completo) - 1);
-						strcat(nome_file_completo, ".html");
-						file = fopen(nome_file_completo, "wt");
-						if (file == NULL)
-						  return false;
-						writeHTMLheader(file, this->denominazione);
-						for (unsigned int _indice = 0; _indice < numero_attivita; _indice++)
-						   {
-							attivita[_indice].getDescrizione(descrizione);
-							if (attivita[_indice].getSvolgimento() < 100 && data.diff(attivita[_indice].getScadenza()) < 0)
-							  {
-								fprintf(file, "<tr>\r\n");
-								fprintf(file, "<td>%s</td><td>%u%%</td><td>%u-%u-%u</td>\n", descrizione, attivita[_indice].getSvolgimento(), attivita[_indice].getScadenza().getDay(), attivita[_indice].getScadenza().getMonth(), attivita[_indice].getScadenza().getYear());
-								fprintf(file, "</tr>\r\n");
-							  }
-						   }
-						writeHTMLfooter(file);
-						fclose(file);
-						return true;
+			   return creaHTML(data, tipo_file, nome_file, 2, attivita, numero_attivita, this->denominazione);
 			default:	return false;
 		   }
 }
