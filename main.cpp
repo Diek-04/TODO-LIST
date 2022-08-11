@@ -18,7 +18,13 @@ using namespace std;
 //! \brief costante che rappresenta il numero massimo di progetti gestiti dall'applicazione
 const unsigned int NUMERO_MASSIMO_PROGETTI = 16;
 
-
+void set_date(Date &data, int &g, int &m, int &a) 
+{
+	cout << endl << "Giorno? "; cin >> g;
+	cout << "Mese? "; cin >> m;
+	cout << "Anno? "; cin >> a;
+	data.setDate(g, m, a);
+}
 
 
 int main(void)
@@ -198,10 +204,11 @@ int main(void)
 										break;
 							case 3:		// visualizzazione elenco attività in scadenza prima di una specifica data
 										cout << endl << "Data di riferimento:" << endl;
-										cout << endl << "Giorno? "; cin >> giorno;
-										cout << "Mese? "; cin >> mese;
-										cout << "Anno? "; cin >> anno;
-										data.setDate(giorno, mese, anno);
+										//cout << endl << "Giorno? "; cin >> giorno;
+										//cout << "Mese? "; cin >> mese;
+										//cout << "Anno? "; cin >> anno;
+										//data.setDate(giorno, mese, anno);
+										set_date(data, giorno, mese, anno);
 										numero_attivita = progetto->elencaAttivitaInScadenza(data, attivita);
 										if (numero_attivita == 0)
 										  cout << "Nessuna attivita' in scadenza prima del " << giorno << "-" << mese << "-" << anno << endl;
@@ -253,10 +260,11 @@ int main(void)
 										else
 											{
 												cout << endl << "Data di riferimento:" << endl;
-												cout << "Giorno ? "; cin >> giorno;
-												cout << "Mese? "; cin >> mese;
-												cout << "Anno? "; cin >> anno;
-												data.setDate(giorno, mese, anno);
+												//cout << "Giorno ? "; cin >> giorno;
+												//cout << "Mese? "; cin >> mese;
+												//cout << "Anno? "; cin >> anno;
+												//data.setDate(giorno, mese, anno);
+												set_date(data, giorno, mese, anno);
 												cout << endl << "Nome del file? ";
 												cin >> nome_file;
 												if (progetto->esportaAttivitaInScadenzaSuFile(data, ((tipo_file == 'H' || tipo_file == 'h') ? HTML : CSV), nome_file))
@@ -267,10 +275,11 @@ int main(void)
 										break;
 							case 7:		// aggiunta di nuova attivita' al progetto
 										cout << endl << "Data di scadenza:" << endl;
-										cout << endl << "Giorno? "; cin >> giorno;
-										cout << "Mese? "; cin >> mese;
-										cout << "Anno? "; cin >> anno;
-										data.setDate(giorno, mese, anno);
+										//cout << endl << "Giorno? "; cin >> giorno;
+										//cout << "Mese? "; cin >> mese;
+										//cout << "Anno? "; cin >> anno;
+										//data.setDate(giorno, mese, anno);
+										set_date(data, giorno, mese, anno);
 										cout << endl << "Descrizione dell'attivita? ";
 										// acquisizione stringa con spazi e punteggiatura
 										getline(cin, tmp); getline(cin, tmp);
@@ -301,10 +310,11 @@ int main(void)
 												if (percentuale == 100)
 												{
 													cout << endl << "Data di completamento:" << endl;
-													cout << endl << "Giorno? "; cin >> giorno;
-													cout << "Mese? "; cin >> mese;
-													cout << "Anno? "; cin >> anno;
-													data.setDate(giorno, mese, anno);
+													//cout << endl << "Giorno? "; cin >> giorno;
+													//cout << "Mese? "; cin >> mese;
+													//cout << "Anno? "; cin >> anno;
+													//data.setDate(giorno, mese, anno);
+													set_date(data, giorno, mese, anno);
 												}
 												else
 													data.setDate(1, 1, 2000);
@@ -328,10 +338,11 @@ int main(void)
 											{
 												attivita[indice_attivita - 1].getDescrizione(descrizione_attivita);
 												cout << endl << "Data di scadenza dell'attivita?" << endl;
-												cout << endl << "Giorno? "; cin >> giorno;
-												cout << "Mese? "; cin >> mese;
-												cout << "Anno? "; cin >> anno;
-												data.setDate(giorno, mese, anno);
+												//cout << endl << "Giorno? "; cin >> giorno;
+												//cout << "Mese? "; cin >> mese;
+												//cout << "Anno? "; cin >> anno;
+												//data.setDate(giorno, mese, anno);
+												set_date(data, giorno, mese, anno);
 												if (progetto->aggiornaAttivita(descrizione_attivita, data))
 												  cout << "Data di scadenza dell'attivita' del progetto aggiornata" << endl;
 												else
